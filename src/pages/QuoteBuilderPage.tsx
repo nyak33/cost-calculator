@@ -144,6 +144,16 @@ export function QuoteBuilderPage() {
 
           <section className="card">
             <h3>Production Inputs</h3>
+            <div className="settings-field">
+              <div className="settings-label">Job Name</div>
+              <input
+                type="text"
+                className="input settings-control"
+                value={jobInputs.job_name}
+                onChange={(event) => updateJobInputs({ job_name: event.target.value })}
+                placeholder="Enter quote/job name"
+              />
+            </div>
             <div className="settings-grid settings-grid-2">
               <div className="settings-field">
                 <div className="settings-label">Label width (mm)</div>

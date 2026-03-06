@@ -93,6 +93,7 @@ export const settingsSchema = z.object({
 });
 
 export const jobInputsSchema = z.object({
+  job_name: z.string().default("Untitled Quote"),
   width_mm: z.number(),
   height_mm: z.number(),
   quantity_scenarios: z.array(z.number().int()),

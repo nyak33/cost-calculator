@@ -29,7 +29,10 @@ function migrateSettings(input: unknown): Settings {
 function migrateJobInputs(input: unknown): JobInputs {
   const base = jobInputsSchema.safeParse(input);
   if (base.success) {
-    return base.data;
+    return {
+      ...defaultJobInputs,
+      ...base.data,
+    };
   }
 
   return defaultJobInputs;

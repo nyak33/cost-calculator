@@ -2,7 +2,7 @@ import { exportQuoteToXlsx } from "../lib/export/exportXlsx";
 import { useQuoteStore } from "../store/useQuoteStore";
 
 export function ExportPage() {
-  const { settings, components, results, supplierCompare } = useQuoteStore();
+  const { settings, jobInputs, components, results, supplierCompare } = useQuoteStore();
 
   return (
     <main className="page">
@@ -13,6 +13,7 @@ export function ExportPage() {
         onClick={async () => {
           await exportQuoteToXlsx({
             settings,
+            jobInputs,
             components,
             results,
             supplierCompare,

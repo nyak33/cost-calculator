@@ -21,7 +21,7 @@ export function ResultsPage() {
 
   const navigate = useNavigate();
 
-  const { settings, components, results, supplierCompare, ui, setActiveResultsTab, updateSupplierOption, bulkUpdateSupplierTiers } =
+  const { settings, jobInputs, components, results, supplierCompare, ui, setActiveResultsTab, updateSupplierOption, bulkUpdateSupplierTiers } =
     useQuoteStore();
 
   const supplierNameByOptionId = useMemo(() => {
@@ -150,6 +150,7 @@ export function ResultsPage() {
         <div className="results-header">
           <div>
             <h1>Results</h1>
+            <p className="hint">Quote: {jobInputs.job_name?.trim() || "Untitled Quote"}</p>
             <p className="hint">Strategy: Lowest Total Cost Combination</p>
           </div>
           <div className="row wrap">

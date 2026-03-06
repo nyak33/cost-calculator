@@ -1,14 +1,16 @@
-import type { ComputeQuoteOutput, QuoteComponent, Settings, SupplierCompareTable } from "../calc/types";
+import type { ComputeQuoteOutput, JobInputs, QuoteComponent, Settings, SupplierCompareTable } from "../calc/types";
 
 interface ExportInput {
   settings: Settings;
+  jobInputs: JobInputs;
   components: QuoteComponent[];
   results: ComputeQuoteOutput;
   supplierCompare: SupplierCompareTable[];
 }
 
-function buildSummaryRows(results: ComputeQuoteOutput) {
+function buildSummaryRows(results: ComputeQuoteOutput, jobName: string) {
   return results.per_qty.map((row) => ({
+    "Job Name": jobName,
     Quantity: row.qty,
     Status: row.status,
     "Total Cost (MYR)": row.totals.cost_total_myr,
@@ -22,12 +24,13 @@ function buildSummaryRows(results: ComputeQuoteOutput) {
   }));
 }
 
-function buildBreakdownRows(results: ComputeQuoteOutput) {
+function buildBreakdownRows(results: ComputeQuoteOutput, jobName: string) {
   const rows: Array<Record<string, unknown>> = [];
 
   results.per_qty.forEach((qtyResult) => {
     if (qtyResult.status !== "OK") {
       rows.push({
+        "Job Name": jobName,
         Quantity: qtyResult.qty,
         Component: "N/A",
         Supplier: "N/A",
@@ -44,6 +47,7 @@ function buildBreakdownRows(results: ComputeQuoteOutput) {
 
     qtyResult.lines.forEach((line) => {
       rows.push({
+        "Job Name": jobName,
         Quantity: qtyResult.qty,
         Component: line.component_name,
         Supplier: line.supplier_name ?? "",
@@ -92,9 +96,13 @@ function buildWarningsRows(results: ComputeQuoteOutput) {
   }));
 }
 
-function buildSettingsRows(settings: Settings) {
+function buildSettingsRows(settings: Settings, jobInputs: JobInputs) {
   return [
     {
+      job_name: jobInputs.job_name,
+      width_mm: jobInputs.width_mm,
+      height_mm: jobInputs.height_mm,
+      quantity_scenarios: jobInputs.quantity_scenarios.join(", "),
       rmb_per_myr: settings.rmb_per_myr,
       weight_factor: settings.weight_factor,
       buffer_pct: settings.buffer_pct,
@@ -121,12 +129,13 @@ function addSheet(XLSX: typeof import("xlsx"), wb: import("xlsx").WorkBook, name
 export async function exportQuoteToXlsx(input: ExportInput): Promise<void> {
   const XLSX = await import("xlsx");
   const wb = XLSX.utils.book_new();
+  const jobName = input.jobInputs.job_name?.trim() || "Untitled Quote";
 
-  addSheet(XLSX, wb, "Summary", buildSummaryRows(input.results));
-  addSheet(XLSX, wb, "Breakdown", buildBreakdownRows(input.results));
+  addSheet(XLSX, wb, "Summary", buildSummaryRows(input.results, jobName));
+  addSheet(XLSX, wb, "Breakdown", buildBreakdownRows(input.results, jobName));
   addSheet(XLSX, wb, "Supplier Compare", buildSupplierCompareRows(input.supplierCompare));
   addSheet(XLSX, wb, "Warnings", buildWarningsRows(input.results));
-  addSheet(XLSX, wb, "Settings", buildSettingsRows(input.settings));
+  addSheet(XLSX, wb, "Settings", buildSettingsRows(input.settings, input.jobInputs));
 
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");

@@ -28,6 +28,7 @@ export const defaultSettings: Settings = {
 };
 
 export const defaultJobInputs: JobInputs = {
+  job_name: "Untitled Quote",
   width_mm: 50,
   height_mm: 30,
   quantity_scenarios: [50000, 100000, 150000],

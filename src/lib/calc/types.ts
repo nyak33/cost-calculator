@@ -29,6 +29,7 @@ export interface Settings {
 }
 
 export interface JobInputs {
+  job_name: string;
   width_mm: number;
   height_mm: number;
   quantity_scenarios: number[];
